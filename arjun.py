@@ -29,6 +29,7 @@ from core.utils import e, d, stabilize, randomString, slicer, joiner, unityExtra
 parser = argparse.ArgumentParser() # defines the parser
 # Arguments that can be supplied
 parser.add_argument('-u', help='target url', dest='url')
+parser.add_argument('-x', help='proxy', dest='proxy')
 parser.add_argument('-o', help='path for the output file', dest='output_file')
 parser.add_argument('-d', help='request delay', dest='delay', type=float, default=0)
 parser.add_argument('-t', help='number of threads', dest='threads', type=int, default=2)
@@ -43,6 +44,7 @@ parser.add_argument('--include', help='include this data in every request', dest
 args = parser.parse_args() # arguments to be parsed
 
 url = args.url
+proxy = args.proxy
 delay = args.delay
 stable = args.stable
 include = args.include
@@ -51,6 +53,15 @@ jsonData = args.jsonData
 url_file = args.url_file
 wordlist = args.wordlist
 threadCount = args.threads
+
+if proxy:
+    proxies = {
+      'http': args.proxy,
+      'https': args.proxy,
+    }
+else:
+    proxies = {
+    }
 
 if stable or delay:
     threadCount = 1
@@ -131,7 +142,7 @@ def heuristic(response, paramList):
 
 def quickBruter(params, originalResponse, originalCode, reflections, factors, include, delay, headers, url, GET):
     joined = joiner(params, include)
-    newResponse = requester(url, joined, headers, GET, delay)
+    newResponse = requester(url, joined, headers, GET, delay, proxies)
     if newResponse.status_code == 429:
         if core.config.globalVariables['stable']:
             print('%s Hit rate limit, stabilizing the connection..')
@@ -169,14 +180,14 @@ def initialize(url, include, headers, GET, delay, paramList, threadCount):
         return {}
     else:
         print('%s Analysing the content of the webpage' % run)
-        firstResponse = requester(url, include, headers, GET, delay)
+        firstResponse = requester(url, include, headers, GET, delay, proxies)
 
         print('%s Analysing behaviour for a non-existent parameter' % run)
 
         originalFuzz = randomString(6)
         data = {originalFuzz : originalFuzz[::-1]}
         data.update(include)
-        response = requester(url, data, headers, GET, delay)
+        response = requester(url, data, headers, GET, delay, proxies)
         reflections = response.text.count(originalFuzz[::-1])
         print('%s Reflections: %s%i%s' % (info, green, reflections, end))
 

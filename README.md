@@ -31,6 +31,17 @@ This is what Arjun does, it finds valid HTTP parameters with a huge default dict
 The best part? It takes less than 30 seconds to go through this huge list while making just 50-60 requests to the target.\
 Want to know how Arjun does that? [Here's how](https://github.com/s0md3v/Arjun/wiki/How-Arjun-works%3F).
 
+
+### Changes
+Added support for proxies using the -x parameter, new usage
+
+With Proxy
+`python arjun.py -u http://some.api/ --post -o data/result.json -x http://my.proxy:8080`
+
+Without Proxy
+`python arjun.py -u http://some.api/ --post -o data/result.json`
+
+
 ### Donations
 You can encourage me to contribute more to the open source with donations.
 
